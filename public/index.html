@@ -326,33 +326,26 @@
       color: rgba(167,139,250,0.9);
     }
 
-    .preview-automation {
-      background: linear-gradient(135deg, #0a0a0a 0%, #0d1117 50%, #161b22 100%);
+    .preview-bella {
+      background: linear-gradient(135deg, #1a0a00 0%, #2d1200 50%, #1a0800 100%);
     }
-    .preview-logo-automation {
-      font-family: 'Inter', sans-serif;
-      font-size: 1.1rem;
-      font-weight: 800;
-      letter-spacing: 1px;
-      color: #58a6ff;
-      text-transform: uppercase;
+    .preview-logo-bella {
+      font-family: 'Georgia', 'Times New Roman', serif;
+      font-size: 1.5rem;
+      font-weight: 400;
+      letter-spacing: 2px;
+      color: #d4a45a;
+      font-style: italic;
     }
-    .preview-logo-automation span {
+    .preview-logo-bella span {
       display: block;
-      font-size: 0.62rem;
-      letter-spacing: 3px;
-      color: rgba(88,166,255,0.55);
-      margin-top: 5px;
-      font-weight: 500;
-    }
-    .preview-logo-automation .auto-dot {
-      display: inline-block;
-      width: 8px; height: 8px;
-      border-radius: 50%;
-      background: #58a6ff;
-      margin-right: 6px;
-      box-shadow: 0 0 10px rgba(88,166,255,0.8);
-      vertical-align: middle;
+      font-family: 'Inter', sans-serif;
+      font-style: normal;
+      font-size: 0.58rem;
+      letter-spacing: 5px;
+      text-transform: uppercase;
+      color: rgba(212,164,90,0.55);
+      margin-top: 6px;
     }
 
     .preview-overlay {
@@ -713,63 +706,32 @@
           </div>
         </a>
 
-        <!-- Emails Prospection -->
-        <a href="emails-prospection.html" class="projet-card">
-          <div class="projet-preview preview-email">
+        <!-- La Bella Vita -->
+        <a href="la-bella-vita/index.html" class="projet-card">
+          <div class="projet-preview preview-bella">
             <div class="preview-logo">
-              <div class="preview-logo-email">
-                <span class="email-icon">✉️</span>
-                <span class="email-label">Cold Emailing</span>
+              <div class="preview-logo-bella">
+                La Bella Vita
+                <span>Trattoria · Paris</span>
               </div>
             </div>
             <div class="preview-overlay">
-              <div class="preview-btn">Voir les templates →</div>
+              <div class="preview-btn">Voir le site →</div>
             </div>
           </div>
           <div class="projet-info">
             <div class="projet-tags">
-              <span class="tag tag-green">Prospection</span>
-              <span class="tag">Cold email</span>
-              <span class="tag">Commerces locaux</span>
+              <span class="tag">Restauration</span>
+              <span class="tag">Site vitrine</span>
+              <span class="tag">Réservation en ligne</span>
             </div>
-            <h3 class="projet-title">Templates Emails de Prospection</h3>
+            <h3 class="projet-title">La Bella Vita – Trattoria</h3>
             <p class="projet-desc">
-              3 versions d'emails froids pour proposer des sites vitrines à des commerces locaux —
-              coiffeurs, boutiques, salles de sport. Tons direct, question et problème identifié.
+              Site vitrine chaleureux pour une trattoria italienne parisienne. Ambiance
+              authentique, menu interactif, réservation en ligne et galerie photo.
             </p>
             <span class="projet-link">
-              Voir les templates
-              <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-            </span>
-          </div>
-        </a>
-
-        <!-- Automation Pagani -->
-        <a href="https://automation-pagani.onrender.com" target="_blank" class="projet-card">
-          <div class="projet-preview preview-automation">
-            <div class="preview-logo">
-              <div class="preview-logo-automation">
-                <span class="auto-dot"></span>AutomationPagani
-                <span>Alertes email en temps réel</span>
-              </div>
-            </div>
-            <div class="preview-overlay">
-              <div class="preview-btn">Voir le projet →</div>
-            </div>
-          </div>
-          <div class="projet-info">
-            <div class="projet-tags">
-              <span class="tag tag-green">Automation</span>
-              <span class="tag">Node.js</span>
-              <span class="tag">Email API</span>
-            </div>
-            <h3 class="projet-title">Automation Pagani – Alertes Email</h3>
-            <p class="projet-desc">
-              Système d'alertes email instantanées à chaque visite et soumission de formulaire.
-              Backend Node.js + Nodemailer déployé sur Render, sans aucun service tiers.
-            </p>
-            <span class="projet-link">
-              Voir le projet
+              Visiter le site
               <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
             </span>
           </div>
@@ -839,12 +801,15 @@
     const API_BASE = 'https://automation-pagani.onrender.com';
     // ───────────────────────────────────────────────────────────────
 
-    // ── NOTIFICATION DE VISITE ──────────────────────────────────────
+    // ── RÉVEIL DU SERVEUR + NOTIFICATION DE VISITE ─────────────────
     (function sendVisitNotification() {
       const now = new Date();
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 60000);
       fetch(API_BASE + '/api/visit', {
         method:  'POST',
         headers: { 'Content-Type': 'application/json' },
+        signal:  controller.signal,
         body: JSON.stringify({
           date:     now.toLocaleDateString('fr-FR', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }),
           time:     now.toLocaleTimeString('fr-FR'),
@@ -852,7 +817,8 @@
           referrer: document.referrer || 'Accès direct'
         })
       })
-      .catch(() => {}); // silencieux pour le visiteur
+      .then(() => clearTimeout(timeout))
+      .catch(() => clearTimeout(timeout));
     })();
 
     // ── FORMULAIRE DE CONTACT ───────────────────────────────────────
@@ -886,12 +852,17 @@
           sent_at:      new Date().toLocaleString('fr-FR')
         };
 
+        const ctrl = new AbortController();
+        const timer = setTimeout(() => ctrl.abort(), 60000);
+
         fetch(API_BASE + '/api/contact', {
           method:  'POST',
           headers: { 'Content-Type': 'application/json' },
+          signal:  ctrl.signal,
           body:    JSON.stringify(payload)
         })
         .then(r => {
+          clearTimeout(timer);
           if (!r.ok) throw new Error('Statut HTTP ' + r.status);
           return r.json();
         })
@@ -904,7 +875,12 @@
           }
         })
         .catch(err => {
-          showFeedback('error', 'Erreur d\'envoi. Contactez-moi directement : paganilouis@gmail.com');
+          clearTimeout(timer);
+          if (err.name === 'AbortError') {
+            showFeedback('error', 'Le serveur met du temps à répondre. Réessayez dans 30 secondes.');
+          } else {
+            showFeedback('error', 'Erreur d\'envoi. Contactez-moi directement : paganilouis@gmail.com');
+          }
           console.error('[Contact] Erreur :', err.message);
         })
         .finally(() => {
