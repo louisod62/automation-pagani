@@ -1,0 +1,858 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Louis Pagani – Développeur Web & Designer</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Syne:wght@700;800&display=swap" rel="stylesheet" />
+  <style>
+    /* ── RESET & BASE ── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; font-size: 16px; }
+
+    :root {
+      --bg:       #080b12;
+      --bg2:      #0d1120;
+      --bg3:      #111827;
+      --accent:   #6c8eff;
+      --accent2:  #a78bfa;
+      --white:    #f0f2ff;
+      --muted:    #6b7490;
+      --border:   rgba(255,255,255,0.07);
+      --card-bg:  rgba(255,255,255,0.04);
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg);
+      color: var(--white);
+      line-height: 1.7;
+      overflow-x: hidden;
+    }
+
+    a { text-decoration: none; color: inherit; }
+
+    /* ── NOISE TEXTURE ── */
+    body::before {
+      content: '';
+      position: fixed; inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* ── GLOW BLOBS ── */
+    .blob {
+      position: fixed;
+      border-radius: 50%;
+      filter: blur(120px);
+      opacity: 0.12;
+      pointer-events: none;
+      z-index: 0;
+    }
+    .blob-1 { width: 600px; height: 600px; background: var(--accent); top: -200px; left: -200px; }
+    .blob-2 { width: 500px; height: 500px; background: var(--accent2); bottom: -150px; right: -150px; }
+
+    /* ── NAV ── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0;
+      z-index: 100;
+      padding: 20px 40px;
+      display: flex; align-items: center; justify-content: space-between;
+      background: rgba(8, 11, 18, 0.7);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .nav-logo {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.15rem;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .nav-links { display: flex; gap: 32px; }
+    .nav-links a {
+      font-size: 0.88rem;
+      font-weight: 500;
+      color: var(--muted);
+      transition: color 0.2s;
+    }
+    .nav-links a:hover { color: var(--white); }
+
+    .nav-cta {
+      font-size: 0.85rem;
+      font-weight: 600;
+      padding: 9px 20px;
+      border-radius: 8px;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      color: #fff !important;
+      transition: opacity 0.2s, transform 0.2s;
+    }
+    .nav-cta:hover { opacity: 0.88; transform: translateY(-1px); }
+
+    /* ── SECTIONS ── */
+    section { position: relative; z-index: 1; }
+    .container { max-width: 1100px; margin: 0 auto; padding: 0 32px; }
+
+    /* ── HERO ── */
+    #hero {
+      min-height: 100vh;
+      display: flex; align-items: center;
+      padding: 120px 0 80px;
+    }
+
+    .hero-badge {
+      display: inline-flex; align-items: center; gap: 8px;
+      font-size: 0.78rem; font-weight: 600; letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: var(--accent);
+      border: 1px solid rgba(108,142,255,0.3);
+      background: rgba(108,142,255,0.08);
+      padding: 6px 16px;
+      border-radius: 999px;
+      margin-bottom: 28px;
+    }
+    .hero-badge::before {
+      content: '';
+      width: 7px; height: 7px;
+      border-radius: 50%;
+      background: var(--accent);
+      box-shadow: 0 0 8px var(--accent);
+      animation: pulse 2s infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.4; }
+    }
+
+    .hero-title {
+      font-family: 'Syne', sans-serif;
+      font-size: clamp(2.8rem, 6vw, 5.2rem);
+      font-weight: 800;
+      line-height: 1.05;
+      letter-spacing: -2px;
+      margin-bottom: 24px;
+    }
+    .hero-title span {
+      background: linear-gradient(135deg, var(--accent) 0%, var(--accent2) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .hero-sub {
+      font-size: 1.15rem;
+      color: var(--muted);
+      max-width: 580px;
+      margin-bottom: 44px;
+      line-height: 1.8;
+    }
+
+    .hero-actions { display: flex; gap: 16px; flex-wrap: wrap; }
+
+    .btn-primary {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 14px 28px;
+      border-radius: 10px;
+      font-size: 0.95rem; font-weight: 600;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      color: #fff;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(108,142,255,0.3); }
+
+    .btn-secondary {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 14px 28px;
+      border-radius: 10px;
+      font-size: 0.95rem; font-weight: 600;
+      border: 1px solid var(--border);
+      color: var(--muted);
+      background: var(--card-bg);
+      backdrop-filter: blur(10px);
+      transition: border-color 0.2s, color 0.2s, transform 0.2s;
+    }
+    .btn-secondary:hover { border-color: rgba(255,255,255,0.2); color: var(--white); transform: translateY(-2px); }
+
+    .hero-stats {
+      display: flex; gap: 48px;
+      margin-top: 64px;
+      padding-top: 40px;
+      border-top: 1px solid var(--border);
+    }
+    .stat-num {
+      font-family: 'Syne', sans-serif;
+      font-size: 2rem; font-weight: 800;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .stat-label { font-size: 0.82rem; color: var(--muted); margin-top: 2px; }
+
+    /* ── SERVICES ── */
+    #services { padding: 100px 0; background: var(--bg2); }
+
+    .section-tag {
+      font-size: 0.75rem; font-weight: 700; letter-spacing: 2px;
+      text-transform: uppercase; color: var(--accent);
+      margin-bottom: 16px;
+    }
+    .section-title {
+      font-family: 'Syne', sans-serif;
+      font-size: clamp(1.8rem, 3vw, 2.8rem);
+      font-weight: 800;
+      letter-spacing: -1px;
+      margin-bottom: 16px;
+    }
+    .section-sub { color: var(--muted); max-width: 480px; margin-bottom: 60px; }
+
+    .services-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 20px;
+    }
+
+    .service-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 32px;
+      transition: border-color 0.3s, transform 0.3s;
+    }
+    .service-card:hover { border-color: rgba(108,142,255,0.3); transform: translateY(-4px); }
+
+    .service-icon {
+      width: 48px; height: 48px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, rgba(108,142,255,0.15), rgba(167,139,250,0.15));
+      border: 1px solid rgba(108,142,255,0.2);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.4rem;
+      margin-bottom: 20px;
+    }
+    .service-card h3 { font-size: 1rem; font-weight: 700; margin-bottom: 10px; }
+    .service-card p { font-size: 0.88rem; color: var(--muted); line-height: 1.7; }
+
+    /* ── PROJETS ── */
+    #projets { padding: 100px 0; }
+
+    .projets-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 28px;
+      margin-top: 60px;
+    }
+
+    .projet-card {
+      display: block;
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      overflow: hidden;
+      transition: border-color 0.3s, transform 0.3s, box-shadow 0.3s;
+      cursor: pointer;
+    }
+    .projet-card:hover {
+      border-color: rgba(108,142,255,0.4);
+      transform: translateY(-6px);
+      box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+    }
+
+    .projet-preview {
+      height: 240px;
+      position: relative;
+      overflow: hidden;
+      display: flex; align-items: center; justify-content: center;
+    }
+
+    .preview-dubois {
+      background: linear-gradient(135deg, #1a2744 0%, #243360 50%, #111b33 100%);
+    }
+    .preview-garage {
+      background: linear-gradient(135deg, #111111 0%, #1a1a1a 50%, #2a2a2a 100%);
+    }
+
+    .preview-logo {
+      text-align: center;
+      z-index: 1;
+    }
+    .preview-logo-dubois {
+      font-family: 'Georgia', serif;
+      font-size: 1.5rem;
+      font-weight: 700;
+      letter-spacing: 3px;
+      color: #c9a84c;
+      text-transform: uppercase;
+    }
+    .preview-logo-dubois span {
+      display: block;
+      font-size: 0.65rem;
+      letter-spacing: 4px;
+      color: rgba(201,168,76,0.7);
+      margin-top: 4px;
+    }
+    .preview-logo-garage {
+      font-family: 'Barlow Condensed', 'Arial Narrow', sans-serif;
+      font-size: 1.6rem;
+      font-weight: 900;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: #fff;
+    }
+    .preview-logo-garage em { color: #e30613; font-style: normal; }
+    .preview-logo-garage span { display: block; font-size: 0.7rem; letter-spacing: 5px; color: rgba(255,255,255,0.5); margin-top: 4px; }
+    .preview-email {
+      background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 60%, #312e81 100%);
+    }
+    .preview-logo-email {
+      text-align: center;
+    }
+    .preview-logo-email .email-icon {
+      font-size: 2.6rem;
+      display: block;
+      margin-bottom: 10px;
+      filter: drop-shadow(0 0 16px rgba(108,142,255,0.6));
+    }
+    .preview-logo-email .email-label {
+      font-family: 'Inter', sans-serif;
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: rgba(167,139,250,0.9);
+    }
+
+    .preview-overlay {
+      position: absolute; inset: 0;
+      background: rgba(0,0,0,0.0);
+      display: flex; align-items: center; justify-content: center;
+      opacity: 0;
+      transition: opacity 0.3s, background 0.3s;
+    }
+    .projet-card:hover .preview-overlay {
+      opacity: 1;
+      background: rgba(0,0,0,0.35);
+    }
+    .preview-btn {
+      padding: 12px 28px;
+      border-radius: 8px;
+      font-size: 0.88rem; font-weight: 700;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      color: #fff;
+      letter-spacing: 0.5px;
+    }
+
+    .projet-info { padding: 28px 32px 32px; }
+
+    .projet-tags { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 14px; }
+    .tag {
+      font-size: 0.72rem; font-weight: 600; letter-spacing: 0.5px;
+      padding: 4px 12px;
+      border-radius: 999px;
+      background: rgba(108,142,255,0.1);
+      border: 1px solid rgba(108,142,255,0.2);
+      color: var(--accent);
+    }
+    .tag-red {
+      background: rgba(227,6,19,0.1);
+      border-color: rgba(227,6,19,0.25);
+      color: #e35060;
+    }
+    .tag-green {
+      background: rgba(5,150,105,0.1);
+      border-color: rgba(5,150,105,0.25);
+      color: #059669;
+    }
+
+    .projet-title {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.35rem; font-weight: 800;
+      margin-bottom: 10px;
+      letter-spacing: -0.5px;
+    }
+    .projet-desc { font-size: 0.9rem; color: var(--muted); line-height: 1.75; margin-bottom: 24px; }
+
+    .projet-link {
+      display: inline-flex; align-items: center; gap: 8px;
+      font-size: 0.88rem; font-weight: 600;
+      color: var(--accent);
+      transition: gap 0.2s;
+    }
+    .projet-card:hover .projet-link { gap: 12px; }
+
+    /* ── CONTACT ── */
+    #contact {
+      padding: 100px 0;
+      background: var(--bg2);
+      text-align: center;
+    }
+
+    .contact-box {
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 60px 48px;
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 24px;
+    }
+
+    .contact-box .section-tag { display: block; margin-bottom: 16px; }
+    .contact-title {
+      font-family: 'Syne', sans-serif;
+      font-size: 2.2rem; font-weight: 800;
+      letter-spacing: -1px;
+      margin-bottom: 16px;
+    }
+    .contact-sub { color: var(--muted); font-size: 0.95rem; margin-bottom: 36px; }
+
+    .contact-email {
+      display: inline-flex; align-items: center; gap: 10px;
+      padding: 16px 32px;
+      border-radius: 12px;
+      font-size: 1rem; font-weight: 600;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      color: #fff;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .contact-email:hover { transform: translateY(-2px); box-shadow: 0 10px 36px rgba(108,142,255,0.35); }
+
+    /* ── FOOTER ── */
+    footer {
+      padding: 28px 40px;
+      border-top: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: space-between;
+      position: relative; z-index: 1;
+    }
+    footer p { font-size: 0.82rem; color: var(--muted); }
+    .footer-logo {
+      font-family: 'Syne', sans-serif;
+      font-weight: 800; font-size: 0.95rem;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    /* ── CONTACT FORM ── */
+    .contact-box { max-width: 680px; }
+    .contact-form { width: 100%; margin-top: 28px; text-align: left; }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    .form-group { margin-bottom: 14px; }
+    .form-label {
+      display: block;
+      font-size: 0.75rem; font-weight: 600;
+      color: var(--muted);
+      margin-bottom: 6px;
+      letter-spacing: 0.5px;
+    }
+    .form-input, .form-select, .form-textarea {
+      width: 100%;
+      padding: 11px 14px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,0.05);
+      color: var(--white);
+      font-family: 'Inter', sans-serif;
+      font-size: 0.9rem;
+      outline: none;
+      transition: border-color 0.2s, background 0.2s;
+    }
+    .form-input:focus, .form-select:focus, .form-textarea:focus {
+      border-color: rgba(108,142,255,0.5);
+      background: rgba(108,142,255,0.06);
+    }
+    .form-input::placeholder, .form-textarea::placeholder { color: rgba(107,116,144,0.6); }
+    .form-select { cursor: pointer; }
+    .form-select option { background: #0d1120; color: var(--white); }
+    .form-textarea { resize: vertical; min-height: 110px; line-height: 1.6; }
+    .btn-submit {
+      width: 100%;
+      padding: 14px;
+      margin-top: 8px;
+      border: none;
+      border-radius: 10px;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.95rem; font-weight: 600;
+      cursor: pointer;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      color: #fff;
+      transition: transform 0.2s, box-shadow 0.2s, opacity 0.2s;
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+    }
+    .btn-submit:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(108,142,255,0.3); }
+    .btn-submit:disabled { opacity: 0.55; cursor: not-allowed; }
+    .form-feedback {
+      display: none;
+      margin-top: 14px;
+      padding: 12px 16px;
+      border-radius: 10px;
+      font-size: 0.88rem; font-weight: 500;
+      text-align: center;
+    }
+    .form-feedback.success {
+      background: rgba(5,150,105,0.12);
+      border: 1px solid rgba(5,150,105,0.3);
+      color: #34d399;
+    }
+    .form-feedback.error {
+      background: rgba(239,68,68,0.1);
+      border: 1px solid rgba(239,68,68,0.25);
+      color: #f87171;
+    }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 768px) {
+      nav { padding: 16px 20px; }
+      .nav-links { display: none; }
+      .hero-stats { gap: 28px; flex-wrap: wrap; }
+      .projets-grid { grid-template-columns: 1fr; }
+      .contact-box { padding: 40px 24px; }
+      .form-row { grid-template-columns: 1fr; }
+      footer { flex-direction: column; gap: 12px; text-align: center; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="blob blob-1"></div>
+  <div class="blob blob-2"></div>
+
+  <!-- NAV -->
+  <nav>
+    <span class="nav-logo">LP.</span>
+    <div class="nav-links">
+      <a href="#services">Services</a>
+      <a href="#projets">Projets</a>
+      <a href="#contact">Contact</a>
+    </div>
+    <a href="#contact" class="nav-links"><a href="#contact" class="nav-cta">Me contacter</a></a>
+  </nav>
+
+  <!-- HERO -->
+  <section id="hero">
+    <div class="container">
+      <div class="hero-badge">Disponible pour nouveaux projets</div>
+      <h1 class="hero-title">
+        Création de sites web<br>
+        <span>qui convertissent.</span>
+      </h1>
+      <p class="hero-sub">
+        Je conçois des expériences digitales sur-mesure pour les professionnels et les PME.
+        Design soigné, code propre, résultats mesurables.
+      </p>
+      <div class="hero-actions">
+        <a href="#projets" class="btn-primary">
+          Voir mes projets
+          <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </a>
+        <a href="#contact" class="btn-secondary">
+          Me contacter
+        </a>
+      </div>
+      <div class="hero-stats">
+        <div>
+          <div class="stat-num">5+</div>
+          <div class="stat-label">Projets livrés</div>
+        </div>
+        <div>
+          <div class="stat-num">100%</div>
+          <div class="stat-label">Clients satisfaits</div>
+        </div>
+        <div>
+          <div class="stat-num">48h</div>
+          <div class="stat-label">Délai de réponse</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SERVICES -->
+  <section id="services">
+    <div class="container">
+      <p class="section-tag">Ce que je fais</p>
+      <h2 class="section-title">Mes services</h2>
+      <p class="section-sub">Des solutions digitales complètes, de la conception au déploiement.</p>
+
+      <div class="services-grid">
+        <div class="service-card">
+          <div class="service-icon">🎨</div>
+          <h3>Design UI/UX</h3>
+          <p>Interfaces modernes et intuitives pensées pour vos utilisateurs. Chaque pixel compte.</p>
+        </div>
+        <div class="service-card">
+          <div class="service-icon">⚡</div>
+          <h3>Développement Web</h3>
+          <p>Sites vitrine, landing pages et applications web performants et bien référencés.</p>
+        </div>
+        <div class="service-card">
+          <div class="service-icon">📱</div>
+          <h3>Responsive Design</h3>
+          <p>Votre site s'adapte parfaitement à tous les écrans : mobile, tablette, desktop.</p>
+        </div>
+        <div class="service-card">
+          <div class="service-icon">🚀</div>
+          <h3>Optimisation SEO</h3>
+          <p>Structure technique et sémantique optimisée pour votre visibilité sur Google.</p>
+        </div>
+        <div class="service-card">
+          <div class="service-icon">🔒</div>
+          <h3>Maintenance</h3>
+          <p>Suivi, mises à jour et évolutions de votre site dans la durée.</p>
+        </div>
+        <div class="service-card">
+          <div class="service-icon">💡</div>
+          <h3>Conseil Digital</h3>
+          <p>Stratégie digitale, identité visuelle et recommandations pour votre présence en ligne.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PROJETS -->
+  <section id="projets">
+    <div class="container">
+      <p class="section-tag">Portfolio</p>
+      <h2 class="section-title">Projets récents</h2>
+      <p class="section-sub">Des réalisations concrètes pour des clients exigeants.</p>
+
+      <div class="projets-grid">
+
+        <!-- Cabinet Dubois -->
+        <a href="cabinet-dubois/index.html" class="projet-card">
+          <div class="projet-preview preview-dubois">
+            <div class="preview-logo">
+              <div class="preview-logo-dubois">
+                Cabinet Dubois
+                <span>Avocats à Paris</span>
+              </div>
+            </div>
+            <div class="preview-overlay">
+              <div class="preview-btn">Voir le site →</div>
+            </div>
+          </div>
+          <div class="projet-info">
+            <div class="projet-tags">
+              <span class="tag">Juridique</span>
+              <span class="tag">Site vitrine</span>
+              <span class="tag">Design haut de gamme</span>
+            </div>
+            <h3 class="projet-title">Cabinet Dubois – Avocats</h3>
+            <p class="projet-desc">
+              Site vitrine élégant pour un cabinet d'avocats parisien. Design institutionnel
+              marine et or, présentation des expertises juridiques, formulaire de contact
+              et page équipe.
+            </p>
+            <span class="projet-link">
+              Visiter le site
+              <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+            </span>
+          </div>
+        </a>
+
+        <!-- Garage Auto Prestige -->
+        <a href="garage-auto-prestige/index.html" class="projet-card">
+          <div class="projet-preview preview-garage">
+            <div class="preview-logo">
+              <div class="preview-logo-garage">
+                Garage<em>Auto</em>
+                <span>Prestige</span>
+              </div>
+            </div>
+            <div class="preview-overlay">
+              <div class="preview-btn">Voir le site →</div>
+            </div>
+          </div>
+          <div class="projet-info">
+            <div class="projet-tags">
+              <span class="tag tag-red">Automobile</span>
+              <span class="tag">Multi-pages</span>
+              <span class="tag">Design sport</span>
+            </div>
+            <h3 class="projet-title">Garage Auto Prestige</h3>
+            <p class="projet-desc">
+              Site multi-pages dynamique pour un garage automobile haut de gamme. Identité
+              visuelle forte, présentation des services, prise de rendez-vous en ligne
+              et animations CSS.
+            </p>
+            <span class="projet-link">
+              Visiter le site
+              <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+            </span>
+          </div>
+        </a>
+
+        <!-- Emails Prospection -->
+        <a href="emails-prospection.html" class="projet-card">
+          <div class="projet-preview preview-email">
+            <div class="preview-logo">
+              <div class="preview-logo-email">
+                <span class="email-icon">✉️</span>
+                <span class="email-label">Cold Emailing</span>
+              </div>
+            </div>
+            <div class="preview-overlay">
+              <div class="preview-btn">Voir les templates →</div>
+            </div>
+          </div>
+          <div class="projet-info">
+            <div class="projet-tags">
+              <span class="tag tag-green">Prospection</span>
+              <span class="tag">Cold email</span>
+              <span class="tag">Commerces locaux</span>
+            </div>
+            <h3 class="projet-title">Templates Emails de Prospection</h3>
+            <p class="projet-desc">
+              3 versions d'emails froids pour proposer des sites vitrines à des commerces locaux —
+              coiffeurs, boutiques, salles de sport. Tons direct, question et problème identifié.
+            </p>
+            <span class="projet-link">
+              Voir les templates
+              <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+            </span>
+          </div>
+        </a>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- CONTACT -->
+  <section id="contact">
+    <div class="container">
+      <div class="contact-box">
+        <span class="section-tag">Contact</span>
+        <h2 class="contact-title">Travaillons ensemble</h2>
+        <p class="contact-sub">
+          Un projet en tête ? Décrivez-le en quelques mots — je vous réponds sous 48h.
+        </p>
+
+        <form id="contact-form" class="contact-form" novalidate>
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label" for="f-nom">Votre nom</label>
+              <input class="form-input" type="text" id="f-nom" name="from_name" placeholder="Jean Dupont" required />
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="f-email">Votre email</label>
+              <input class="form-input" type="email" id="f-email" name="from_email" placeholder="jean@example.com" required />
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="f-projet">Type de projet</label>
+            <select class="form-select" id="f-projet" name="project_type" required>
+              <option value="" disabled selected>Sélectionnez un type de projet</option>
+              <option value="Site vitrine">Site vitrine</option>
+              <option value="Landing page">Landing page</option>
+              <option value="Refonte de site">Refonte de site</option>
+              <option value="Application web">Application web</option>
+              <option value="Autre">Autre</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="f-message">Votre message</label>
+            <textarea class="form-textarea" id="f-message" name="message" placeholder="Décrivez votre projet, vos objectifs, vos délais..." required></textarea>
+          </div>
+          <button type="submit" class="btn-submit" id="btn-submit">
+            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M22 2L11 13M22 2L15 22l-4-9-9-4 20-7z"/></svg>
+            Envoyer le message
+          </button>
+          <div class="form-feedback" id="form-feedback"></div>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <span class="footer-logo">Louis Pagani</span>
+    <p>© 2026 – Développeur Web & Designer</p>
+  </footer>
+
+
+  <script>
+    // ── URL DU BACKEND ──────────────────────────────────────────────
+    // En local : 'http://localhost:3001'
+    // En production : remplacez par l'URL de votre serveur déployé
+    const API_BASE = 'http://localhost:3001';
+    // ───────────────────────────────────────────────────────────────
+
+    // ── NOTIFICATION DE VISITE ──────────────────────────────────────
+    (function sendVisitNotification() {
+      const now = new Date();
+      fetch(API_BASE + '/api/visit', {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          date:     now.toLocaleDateString('fr-FR', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }),
+          time:     now.toLocaleTimeString('fr-FR'),
+          url:      window.location.href,
+          referrer: document.referrer || 'Accès direct'
+        })
+      })
+      .catch(() => {}); // silencieux pour le visiteur
+    })();
+
+    // ── FORMULAIRE DE CONTACT ───────────────────────────────────────
+    const form      = document.getElementById('contact-form');
+    const btnSubmit = document.getElementById('btn-submit');
+    const feedback  = document.getElementById('form-feedback');
+
+    const BTN_DEFAULT = '<svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M22 2L11 13M22 2L15 22l-4-9-9-4 20-7z"/></svg> Envoyer le message';
+    const BTN_LOADING = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg> Envoi en cours…';
+
+    function showFeedback(type, msg) {
+      feedback.className = 'form-feedback ' + type;
+      feedback.textContent = msg;
+      feedback.style.display = 'block';
+    }
+
+    if (form) {
+      form.addEventListener('submit', function(e) {
+        e.preventDefault();
+        if (!form.checkValidity()) { form.reportValidity(); return; }
+
+        btnSubmit.disabled = true;
+        btnSubmit.innerHTML = BTN_LOADING;
+        feedback.style.display = 'none';
+
+        const payload = {
+          from_name:    document.getElementById('f-nom').value.trim(),
+          from_email:   document.getElementById('f-email').value.trim(),
+          project_type: document.getElementById('f-projet').value,
+          message:      document.getElementById('f-message').value.trim(),
+          sent_at:      new Date().toLocaleString('fr-FR')
+        };
+
+        fetch(API_BASE + '/api/contact', {
+          method:  'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body:    JSON.stringify(payload)
+        })
+        .then(r => {
+          if (!r.ok) throw new Error('Statut HTTP ' + r.status);
+          return r.json();
+        })
+        .then(data => {
+          if (data.success) {
+            showFeedback('success', '✓ Message envoyé ! Je vous réponds dans les 48h.');
+            form.reset();
+          } else {
+            throw new Error(data.error || 'Erreur inconnue');
+          }
+        })
+        .catch(err => {
+          showFeedback('error', 'Erreur d\'envoi. Contactez-moi directement : paganilouis@gmail.com');
+          console.error('[Contact] Erreur :', err.message);
+        })
+        .finally(() => {
+          btnSubmit.disabled = false;
+          btnSubmit.innerHTML = BTN_DEFAULT;
+        });
+      });
+    }
+  </script>
+</body>
+</html>
